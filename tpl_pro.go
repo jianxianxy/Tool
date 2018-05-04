@@ -17,11 +17,12 @@ type RetJson struct{
 }
 
 func main(){
-    page := 10
-    count := 1000
+    b_Time := time.Now().Unix()
+    page := 5
+    count := 200
     master := make(chan int,page)
     for i := 0; i < page; i++ {
-        start := i * count;
+        start := i * count + 1;
         end := count + i * count 
         go CreateWork(start,end,master)
     }
@@ -30,7 +31,9 @@ func main(){
         wno := <-master  
         all += wno  
     }
-    fmt.Println("处理结束,共生成:",all)
+    e_Time := time.Now().Unix()
+    u_Time := e_Time - b_Time
+    fmt.Println("处理结束,共生成:",all,"用时:",u_Time)
 }
 
 //开启多个Work
@@ -41,8 +44,11 @@ func CreateWork(start int,end int,master chan int){
     for{
         select{
             case back := <- work:
-                if(back < 0){
+                if back == -2{
                     goto HERE
+                }else if back == -1{
+                    succ += 1
+                    goto HERE    
                 }else{
                     succ += back
                 }
@@ -65,12 +71,14 @@ func ChanTimeOutGet(start int,end int,work chan int){
     go ChanGet(url,ch)
     select{
         case back := <- ch:
-            if start < end{
-                work <- back    
+            if start < end{   
+                work <- back
                 start += 1
                 ChanTimeOutGet(start,end,work)            
+            }else if back > 0{
+                work <- -1 //成功并结束  
             }else{
-                work <- -1    
+                work <- -2 //失败并结束    
             }
         case back := <- timeOut:
             fmt.Println("[",start,":timeout]")
@@ -79,7 +87,7 @@ func ChanTimeOutGet(start int,end int,work chan int){
                 start += 1
                 ChanTimeOutGet(start,end,work)            
             }else{
-                work <- -1    
+                work <- -2 //失败并结束   
             }
     }
 }
@@ -91,8 +99,8 @@ func ChanGet(url string,ch chan int){
         fmt.Println(url + " >> " + body)
         ch <- 0
     }else{
-        //fmt.Println(body);
-        sta,_ := FormatOne(body)    
+        //fmt.Println(body)
+        sta,_ := FormatOne(body)   
         ch <- sta
     }    
 }
