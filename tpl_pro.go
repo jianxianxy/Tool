@@ -16,13 +16,16 @@ type RetJson struct{
     Data string `json:"data"`
 }
 
+//打印详细信息
+var Prtlog = false 
 //请求地址Map键值
-var UseUrl = "makeone"
+var UseUrl = "makeone" //[monline 线上(50),makeone 测试(10)]
 
 //返回请求地址
 func RetUrl(key string,par string)string{
     Gurl := make(map[string]string)
     Gurl["makeone"] = "http://tpl.t.com/Product/MakeOne?productId="
+    Gurl["monline"] = "http://tpl.sfbest.com/Product/MakeOne?productId="
     if url,ok := Gurl[key];ok{
         return url + par    
     }else{
@@ -32,8 +35,8 @@ func RetUrl(key string,par string)string{
 
 func main(){
     b_Time := time.Now().Unix()
-    page := 10
-    count := 20
+    page := 50
+    count := 100
     master := make(chan int,page*2)
     for i := 0; i < page; i++ {
         start := i * count + 1;
@@ -48,7 +51,7 @@ func main(){
     e_Time := time.Now().Unix()
     u_Time := e_Time - b_Time
     fmt.Println("处理结束,共生成:",all,"用时:",u_Time)
-}
+} 
 
 //开启多个Work
 func CreateWork(start int,end int,master chan int){
@@ -69,7 +72,9 @@ func CreateWork(start int,end int,master chan int){
         }    
     }
     HERE:
-    fmt.Println(start,"-",end," 成功:",succ)
+    if Prtlog{
+        fmt.Println(start,"-",end," 成功:",succ)    
+    }    
     master <- succ
 }
 
