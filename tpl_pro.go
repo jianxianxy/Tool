@@ -9,18 +9,32 @@ import(
     "net/http"  
 )
 
-//`json:"is_on_sale,string"`
+//处理响应 `json:"is_on_sale,string"`
 type RetJson struct{
     Status int `json:"status"` 
     Info string `json:"info"`
     Data string `json:"data"`
 }
 
+//请求地址Map键值
+var UseUrl = "makeone"
+
+//返回请求地址
+func RetUrl(key string,par string)string{
+    Gurl := make(map[string]string)
+    Gurl["makeone"] = "http://tpl.t.com/Product/MakeOne?productId="
+    if url,ok := Gurl[key];ok{
+        return url + par    
+    }else{
+        panic("未找到请求地址")
+    }
+}
+
 func main(){
     b_Time := time.Now().Unix()
-    page := 5
-    count := 200
-    master := make(chan int,page)
+    page := 10
+    count := 20
+    master := make(chan int,page*2)
     for i := 0; i < page; i++ {
         start := i * count + 1;
         end := count + i * count 
@@ -61,9 +75,9 @@ func CreateWork(start int,end int,master chan int){
 
 //多Channel处理
 func ChanTimeOutGet(start int,end int,work chan int){
-    url := "http://tpl.t.com/Product/MakeOne?productId=" + strconv.Itoa(start)
+    url := RetUrl(UseUrl,strconv.Itoa(start))
     ch := make(chan int)
-    timeOut := make(chan int)
+    timeOut := make(chan int)//超时设置
     go func(){
         time.Sleep(12e9)
         timeOut <- 0
@@ -80,11 +94,11 @@ func ChanTimeOutGet(start int,end int,work chan int){
             }else{
                 work <- -2 //失败并结束    
             }
-        case back := <- timeOut:
+        case back := <- timeOut: //请求超时
             fmt.Println("[",start,":timeout]")
             if start < end{
                 work <- back    
-                start += 1
+                start += 1 //失败并继续
                 ChanTimeOutGet(start,end,work)            
             }else{
                 work <- -2 //失败并结束   
