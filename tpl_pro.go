@@ -17,7 +17,7 @@ type RetJson struct{
 }
 
 //打印详细信息
-var Prtlog = false 
+var Prtlog = true 
 //请求地址Map键值
 var UseUrl = "makeone" //[monline 线上(50),makeone 测试(10)]
 
@@ -34,10 +34,25 @@ func RetUrl(key string,par string)string{
 }
 
 func main(){
+    FreshSome(18,18)
+    //FreshAll()  
+} 
+//制定更新
+func FreshSome(start int,end int){
+    b_Time := time.Now().Unix()  
+    master := make(chan int)  
+    go CreateWork(start,end,master)
+    all := <- master
+    e_Time := time.Now().Unix()
+    u_Time := e_Time - b_Time
+    fmt.Println("处理结束,共生成:",all,"用时:",u_Time)
+}
+//全量更新
+func FreshAll(){
     b_Time := time.Now().Unix()
-    page := 50
-    count := 100
-    master := make(chan int,page*2)
+    page := 10
+    count := 10
+    master := make(chan int,page)
     for i := 0; i < page; i++ {
         start := i * count + 1;
         end := count + i * count 
@@ -50,8 +65,8 @@ func main(){
     }
     e_Time := time.Now().Unix()
     u_Time := e_Time - b_Time
-    fmt.Println("处理结束,共生成:",all,"用时:",u_Time)
-} 
+    fmt.Println("处理结束,共生成:",all,"用时:",u_Time)    
+}
 
 //开启多个Work
 func CreateWork(start int,end int,master chan int){
