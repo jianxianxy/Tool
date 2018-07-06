@@ -34,10 +34,15 @@ func RetUrl(key string,par string)string{
 }
 
 func main(){
-    FreshSome(18,18)
-    //FreshAll()  
+    b_Time := time.Now()
+    body,_ := GetUrl("http://tpl.v.com/Product/MakeOne?productId=1")
+    u_Time := time.Since(b_Time)
+    fmt.Println(body,"处理结束,共生成:1","用时:",u_Time)
+    
+    //FreshSome(18,18) //更新制定区间
+    //FreshAll() //更新全部
 } 
-//制定更新
+//指定更新
 func FreshSome(start int,end int){
     b_Time := time.Now().Unix()  
     master := make(chan int)  
