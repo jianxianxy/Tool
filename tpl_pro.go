@@ -34,13 +34,12 @@ func RetUrl(key string,par string)string{
 }
 
 func main(){
-    b_Time := time.Now()
-    body,_ := GetUrl("http://tpl.v.com/Product/MakeOne?productId=1")
-    u_Time := time.Since(b_Time)
-    fmt.Println(body,"处理结束,共生成:1","用时:",u_Time)
-    
-    //FreshSome(18,18) //更新制定区间
-    //FreshAll() //更新全部
+//    b_Time := time.Now()
+//    body,_ := GetUrl("http://tpl.v.com/Product/MakeOne?productId=1")
+//    u_Time := time.Since(b_Time)
+//    fmt.Println(body,"处理结束,共生成:1","用时:",u_Time)
+//    FreshSome(18,18) //更新制定区间
+      FreshAll() //更新全部
 } 
 //指定更新
 func FreshSome(start int,end int){
@@ -56,7 +55,7 @@ func FreshSome(start int,end int){
 func FreshAll(){
     b_Time := time.Now().Unix()
     page := 10
-    count := 10
+    count := 2600
     master := make(chan int,page)
     for i := 0; i < page; i++ {
         start := i * count + 1;
