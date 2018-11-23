@@ -1,7 +1,7 @@
 /*
-	Golang 接口、类、继承
-	运用实例
-*/
+ *Golang 接口、类、继承
+ *运用实例
+ */
 package main
 
 import "fmt"

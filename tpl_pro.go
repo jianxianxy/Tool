@@ -1,6 +1,6 @@
 /*
-	批量生成静态页
-*/
+ *批量生成静态页
+ */
 package main
 
 import (
